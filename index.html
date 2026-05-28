@@ -533,7 +533,6 @@
                             <th>所需单日增长</th>
                             <th>实际DoD</th>
                             <th>进度状态</th>
-                            <th>当日DoD预警</th>
                         </tr>
                     </thead>
                     <tbody id="insightsTableBody"></tbody>
@@ -4501,44 +4500,6 @@
                                     "actual_dod": 5.13,
                                     "dod_status": "达标"
                         }
-            ],
-            "warning_cities": [
-                        {
-                                    "city": "钦州市",
-                                    "actual_dod": 2.38,
-                                    "required": 4.48,
-                                    "gap": 2.1
-                        },
-                        {
-                                    "city": "梧州市",
-                                    "actual_dod": 2.02,
-                                    "required": 2.56,
-                                    "gap": 0.54
-                        },
-                        {
-                                    "city": "博白县",
-                                    "actual_dod": 1.4,
-                                    "required": 3.7,
-                                    "gap": 2.3
-                        },
-                        {
-                                    "city": "岑溪",
-                                    "actual_dod": -0.58,
-                                    "required": 2.87,
-                                    "gap": 3.45
-                        },
-                        {
-                                    "city": "东兰县",
-                                    "actual_dod": 0.0,
-                                    "required": 17.5,
-                                    "gap": 17.5
-                        },
-                        {
-                                    "city": "凤山县",
-                                    "actual_dod": 0.0,
-                                    "required": 18.75,
-                                    "gap": 18.75
-                        }
             ]
 };
 
@@ -5404,11 +5365,6 @@ const reportData = [
             overviewHtml += '<div class="text-xs text-gray-500 mt-1">剩余天数</div>';
             overviewHtml += '</div>';
 
-            var warningCount = insightsData.warning_cities.length;
-            overviewHtml += '<div class="text-center">';
-            overviewHtml += '<div class="text-2xl font-bold ' + (warningCount > 0 ? 'text-red-600' : 'text-green-600') + '">' + warningCount + '</div>';
-            overviewHtml += '<div class="text-xs text-gray-500 mt-1">当日DoD预警</div>';
-            overviewHtml += '</div>';
 
             overviewHtml += '<div class="text-center">';
             overviewHtml += '<div class="text-2xl font-bold text-blue-600">' + insightsData.city_analysis.length + '</div>';
@@ -5465,19 +5421,6 @@ const reportData = [
                 tableHtml += '<td class="' + actualDodClass + '">' + actualDodStr + '</td>';
                 tableHtml += '<td>' + statusBadge + '</td>';
                 
-                // 当日DoD预警列
-                var isWarning = false;
-                insightsData.warning_cities.forEach(function(w) {
-                    if (w.city === city.city) isWarning = true;
-                });
-                
-                tableHtml += '<td>';
-                if (isWarning) {
-                    tableHtml += '<span class="status-badge status-warning">⚠️ 需关注</span>';
-                } else {
-                    tableHtml += '<span class="text-gray-400">-</span>';
-                }
-                tableHtml += '</td>';
                 
                 tableHtml += '</tr>';
             });
