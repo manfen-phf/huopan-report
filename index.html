@@ -293,7 +293,7 @@
                             <span class="badge badge-success">日报</span>
                             <span>数据日期：2026-05-27（T-1）</span>
                             <span class="text-gray-300">|</span>
-                            <span>生成时间：2026-05-28 19:17:43</span>
+                            <span>生成时间：2026-05-28 19:30:49</span>
                         </p>
                     </div>
                 </div>
@@ -543,7 +543,7 @@
         <!-- 底部 -->
         <div class="text-center text-gray-500 text-sm py-4">
             <p>广西区域运营数据中心 · 数据来源于商品日报明细汇总</p>
-            <p class="mt-1">报告生成时间：2026-05-28 19:17:43 | 仅供参考</p>
+            <p class="mt-1">报告生成时间：2026-05-28 19:30:49 | 仅供参考</p>
         </div>
     </div>
 
@@ -4413,6 +4413,46 @@
             "current_date": "2026-05-27",
             "city_analysis": [
                         {
+                                    "city": "玉林市",
+                                    "current_rate": 66.05,
+                                    "target_rate": 70.0,
+                                    "gap_to_target": 3.95,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 0.99,
+                                    "actual_dod": 4.31,
+                                    "dod_status": "达标"
+                        },
+                        {
+                                    "city": "钦州市",
+                                    "current_rate": 52.09,
+                                    "target_rate": 70.0,
+                                    "gap_to_target": 17.91,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 4.48,
+                                    "actual_dod": 2.38,
+                                    "dod_status": "低于目标"
+                        },
+                        {
+                                    "city": "梧州市",
+                                    "current_rate": 59.77,
+                                    "target_rate": 70.0,
+                                    "gap_to_target": 10.23,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 2.56,
+                                    "actual_dod": 2.02,
+                                    "dod_status": "低于目标"
+                        },
+                        {
+                                    "city": "博白县",
+                                    "current_rate": 60.22,
+                                    "target_rate": 75.0,
+                                    "gap_to_target": 14.78,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 3.7,
+                                    "actual_dod": 1.4,
+                                    "dod_status": "严重不足"
+                        },
+                        {
                                     "city": "岑溪",
                                     "current_rate": 58.54,
                                     "target_rate": 70.0,
@@ -4421,6 +4461,16 @@
                                     "required_daily_growth": 2.87,
                                     "actual_dod": -0.58,
                                     "dod_status": "严重不足"
+                        },
+                        {
+                                    "city": "田东县",
+                                    "current_rate": 58.94,
+                                    "target_rate": 75.0,
+                                    "gap_to_target": 16.06,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 4.02,
+                                    "actual_dod": 5.13,
+                                    "dod_status": "达标"
                         },
                         {
                                     "city": "东兰县",
@@ -4441,58 +4491,9 @@
                                     "required_daily_growth": 18.75,
                                     "actual_dod": 0.0,
                                     "dod_status": "严重不足"
-                        },
-                        {
-                                    "city": "博白县",
-                                    "current_rate": 60.22,
-                                    "target_rate": 75.0,
-                                    "gap_to_target": 14.78,
-                                    "remaining_days": 4,
-                                    "required_daily_growth": 3.7,
-                                    "actual_dod": 1.4,
-                                    "dod_status": "严重不足"
-                        },
-                        {
-                                    "city": "梧州市",
-                                    "current_rate": 59.77,
-                                    "target_rate": 70.0,
-                                    "gap_to_target": 10.23,
-                                    "remaining_days": 4,
-                                    "required_daily_growth": 2.56,
-                                    "actual_dod": 2.02,
-                                    "dod_status": "低于目标"
-                        },
-                        {
-                                    "city": "钦州市",
-                                    "current_rate": 52.09,
-                                    "target_rate": 70.0,
-                                    "gap_to_target": 17.91,
-                                    "remaining_days": 4,
-                                    "required_daily_growth": 4.48,
-                                    "actual_dod": 2.38,
-                                    "dod_status": "低于目标"
-                        },
-                        {
-                                    "city": "玉林市",
-                                    "current_rate": 66.05,
-                                    "target_rate": 70.0,
-                                    "gap_to_target": 3.95,
-                                    "remaining_days": 4,
-                                    "required_daily_growth": 0.99,
-                                    "actual_dod": 4.31,
-                                    "dod_status": "达标"
-                        },
-                        {
-                                    "city": "田东县",
-                                    "current_rate": 58.94,
-                                    "target_rate": 75.0,
-                                    "gap_to_target": 16.06,
-                                    "remaining_days": 4,
-                                    "required_daily_growth": 4.02,
-                                    "actual_dod": 5.13,
-                                    "dod_status": "达标"
                         }
-            ]
+            ],
+            "warning_count": 6
 };
 
 const reportData = [
@@ -5363,6 +5364,12 @@ const reportData = [
             overviewHtml += '<div class="text-center">';
             overviewHtml += '<div class="text-2xl font-bold text-blue-600">' + insightsData.city_analysis.length + '</div>';
             overviewHtml += '<div class="text-xs text-gray-500 mt-1">分析城市数</div>';
+            overviewHtml += '</div>';
+
+            overviewHtml += '<div class="text-center">';
+            var warnColor = insightsData.warning_count > 0 ? 'text-red-600' : 'text-green-600';
+            overviewHtml += '<div class="text-2xl font-bold ' + warnColor + '">' + insightsData.warning_count + '</div>';
+            overviewHtml += '<div class="text-xs text-gray-500 mt-1">当日预警数</div>';
             overviewHtml += '</div>';
 
             document.getElementById('overview-stats').innerHTML = overviewHtml;
