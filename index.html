@@ -217,6 +217,58 @@
         .badge-success { background: #D1FAE5; color: #15803D; }
         .badge-warning { background: #FEF3C7; color: #B45309; }
         .badge-danger { background: #FEE2E2; color: #B91C1C; }
+        .insights-analysis-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+        .insights-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .insights-table th {
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .insights-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 2px solid #FFFFFF;
+        }
+        .insights-table tbody tr:hover {
+            filter: brightness(0.97);
+        }
+        .progress-bar-bg {
+            background: #F3F4F6;
+            border-radius: 8px;
+            height: 24px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.6s ease;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-danger { background: #FEE2E2; color: #B91C1C; }
+        .status-warning { background: #FEF3C7; color: #B45309; }
+        .status-success { background: #D1FAE5; color: #15803D; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -449,13 +501,60 @@
 
                 </div>
 
-        <!-- 数据分析洞察 -->
-        <div class="glass-card p-6 animate-fade-in mt-6">
+        <!-- 数据洞察与分析 -->
+        <div class="insights-analysis-card p-6 animate-fade-in mt-6">
             <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-sm">💡</span>
+                <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-sm">📊</span>
                 数据洞察与分析
+                <span class="text-sm font-normal text-gray-500 ml-2" id="insights-date"></span>
             </h2>
-            <div class="grid md:grid-cols-2 gap-4" id="insights"></div>
+            
+            <!-- 总体进度概览 -->
+            <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="overview-stats"></div>
+            </div>
+
+            <!-- 城市进度分析表格 -->
+            <div class="overflow-x-auto">
+                <table class="insights-table" id="insights-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="min-width:100px;">城市</th>
+                            <th rowspan="2">当前攻克率</th>
+                            <th rowspan="2">目标攻克率</th>
+                            <th rowspan="2">距目标差值</th>
+                            <th rowspan="2">剩余天数</th>
+                            <th rowspan="2">所需单日增长</th>
+                            <th rowspan="2">实际DoD</th>
+                            <th rowspan="2">进度状态</th>
+                            <th colspan="2">预警</th>
+                        </tr>
+                        <tr>
+                            <th>连续慢进度</th>
+                            <th>当日DoD预警</th>
+                        </tr>
+                    </thead>
+                    <tbody id="insightsTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- 重点关注城市 -->
+            <div class="mt-6" id="focus-cities-section" style="display:none;">
+                <h3 class="text-md font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-red-500 flex items-center justify-center text-white text-xs">⚠️</span>
+                    重点关注城市
+                </h3>
+                <div class="grid md:grid-cols-2 gap-4" id="focus-cities"></div>
+            </div>
+
+            <!-- 原洞察卡片（保留） -->
+            <div class="mt-6">
+                <h3 class="text-md font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-blue-500 flex items-center justify-center text-white text-xs">💡</span>
+                    智能洞察
+                </h3>
+                <div class="grid md:grid-cols-2 gap-4" id="insights"></div>
+            </div>
         </div>
 
         <!-- 底部 -->
@@ -4324,7 +4423,105 @@
             }
 ];;
 
-        const reportData = [
+        const insightsData = {
+            "target_date": "2026-05-31",
+            "remaining_days": 4,
+            "current_date": "2026-05-27",
+            "city_analysis": [
+                        {
+                                    "city": "玉林市",
+                                    "current_rate": 66.05,
+                                    "target_rate": 70.0,
+                                    "gap_to_target": 3.95,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 0.99,
+                                    "actual_dod": null,
+                                    "dod_status": "未知",
+                                    "consecutive_slow": 0
+                        },
+                        {
+                                    "city": "钦州市",
+                                    "current_rate": 52.09,
+                                    "target_rate": 70.0,
+                                    "gap_to_target": 17.91,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 4.48,
+                                    "actual_dod": null,
+                                    "dod_status": "未知",
+                                    "consecutive_slow": 0
+                        },
+                        {
+                                    "city": "梧州市",
+                                    "current_rate": 59.77,
+                                    "target_rate": 70.0,
+                                    "gap_to_target": 10.23,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 2.56,
+                                    "actual_dod": null,
+                                    "dod_status": "未知",
+                                    "consecutive_slow": 0
+                        },
+                        {
+                                    "city": "博白县",
+                                    "current_rate": 60.22,
+                                    "target_rate": 75.0,
+                                    "gap_to_target": 14.78,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 3.7,
+                                    "actual_dod": null,
+                                    "dod_status": "未知",
+                                    "consecutive_slow": 0
+                        },
+                        {
+                                    "city": "岑溪",
+                                    "current_rate": 58.54,
+                                    "target_rate": 70.0,
+                                    "gap_to_target": 11.46,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 2.87,
+                                    "actual_dod": null,
+                                    "dod_status": "未知",
+                                    "consecutive_slow": 0
+                        },
+                        {
+                                    "city": "田东县",
+                                    "current_rate": 58.94,
+                                    "target_rate": 75.0,
+                                    "gap_to_target": 16.06,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 4.02,
+                                    "actual_dod": null,
+                                    "dod_status": "未知",
+                                    "consecutive_slow": 0
+                        },
+                        {
+                                    "city": "东兰县",
+                                    "current_rate": 5.0,
+                                    "target_rate": 75.0,
+                                    "gap_to_target": 70.0,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 17.5,
+                                    "actual_dod": null,
+                                    "dod_status": "未知",
+                                    "consecutive_slow": 0
+                        },
+                        {
+                                    "city": "凤山县",
+                                    "current_rate": 0.0,
+                                    "target_rate": 75.0,
+                                    "gap_to_target": 75.0,
+                                    "remaining_days": 4,
+                                    "required_daily_growth": 18.75,
+                                    "actual_dod": null,
+                                    "dod_status": "未知",
+                                    "consecutive_slow": 0
+                        }
+            ],
+            "slow_cities": [],
+            "warning_cities": []
+};
+
+const reportData = [
             {
                         "城市": "玉林市",
                         "考核业务": "P+S",
@@ -5168,6 +5365,163 @@
             }).join('');
         }
 
+        // ===== 渲染数据洞察与分析 =====
+        function renderInsightsAnalysis() {
+            if (typeof insightsData === 'undefined') {
+                console.log('insightsData not found');
+                return;
+            }
+
+            // 1. 更新日期
+            document.getElementById('insights-date').textContent = 
+                '（截至 ' + insightsData.current_date + '，距 ' + insightsData.target_date + ' 还有 ' + insightsData.remaining_days + ' 天）';
+
+            // 2. 渲染总体概览
+            var overviewHtml = '';
+            overviewHtml += '<div class="text-center">';
+            overviewHtml += '<div class="text-2xl font-bold text-blue-600">' + insightsData.remaining_days + '</div>';
+            overviewHtml += '<div class="text-xs text-gray-500 mt-1">剩余天数</div>';
+            overviewHtml += '</div>';
+
+            var warningCount = insightsData.warning_cities.length;
+            overviewHtml += '<div class="text-center">';
+            overviewHtml += '<div class="text-2xl font-bold ' + (warningCount > 0 ? 'text-red-600' : 'text-green-600') + '">' + warningCount + '</div>';
+            overviewHtml += '<div class="text-xs text-gray-500 mt-1">当日DoD预警</div>';
+            overviewHtml += '</div>';
+
+            var slowCount = insightsData.slow_cities.length;
+            overviewHtml += '<div class="text-center">';
+            overviewHtml += '<div class="text-2xl font-bold ' + (slowCount > 0 ? 'text-amber-600' : 'text-green-600') + '">' + slowCount + '</div>';
+            overviewHtml += '<div class="text-xs text-gray-500 mt-1">连续慢进度</div>';
+            overviewHtml += '</div>';
+
+            overviewHtml += '<div class="text-center">';
+            overviewHtml += '<div class="text-2xl font-bold text-purple-600">' + insightsData.city_analysis.length + '</div>';
+            overviewHtml += '<div class="text-xs text-gray-500 mt-1">分析城市数</div>';
+            overviewHtml += '</div>';
+
+            document.getElementById('overview-stats').innerHTML = overviewHtml;
+
+            // 3. 渲染分析表格
+            var tableBody = document.getElementById('insightsTableBody');
+            var tableHtml = '';
+
+            insightsData.city_analysis.forEach(function(city) {
+                var rowClass = '';
+                var statusBadge = '';
+                
+                if (city.dod_status === '严重不足' || city.dod_status === '低于目标') {
+                    rowClass = 'bg-red-50';
+                    statusBadge = '<span class="status-badge status-danger">' + city.dod_status + '</span>';
+                } else if (city.dod_status === '已达标') {
+                    rowClass = 'bg-green-50';
+                    statusBadge = '<span class="status-badge status-success">' + city.dod_status + '</span>';
+                } else {
+                    statusBadge = '<span class="status-badge status-warning">' + city.dod_status + '</span>';
+                }
+
+                // 实际DoD显示（正绿负红）
+                var actualDodStr = '-';
+                var actualDodClass = '';
+                if (city.actual_dod!== null && city.actual_dod!== undefined) {
+                    actualDodStr = (city.actual_dod >= 0 ? '+' : '') + city.actual_dod.toFixed(2) + '%';
+                    actualDodClass = city.actual_dod >= 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold';
+                }
+
+                // 进度条
+                var progressWidth = Math.min(city.current_rate, 100);
+                var progressColor = city.current_rate >= 75 ? 'bg-green-500' : 
+                                  city.current_rate >= 50 ? 'bg-amber-500' : 'bg-red-500';
+
+                tableHtml += '<tr class="' + rowClass + '">';
+                tableHtml += '<td class="font-semibold text-gray-800">' + city.city + '</td>';
+                tableHtml += '<td>';
+                tableHtml += '<div class="flex items-center gap-2">';
+                tableHtml += '<div class="progress-bar-bg flex-1">';
+                tableHtml += '<div class="progress-bar-fill ' + progressColor + '" style="width:' + progressWidth + '%"></div>';
+                tableHtml += '</div>';
+                tableHtml += '<span class="text-sm font-semibold">' + city.current_rate.toFixed(2) + '%</span>';
+                tableHtml += '</div>';
+                tableHtml += '</td>';
+                tableHtml += '<td>' + city.target_rate.toFixed(2) + '%</td>';
+                tableHtml += '<td class="' + (city.gap_to_target > 0 ? 'text-red-600 font-semibold' : 'text-green-600 font-semibold') + '">' + city.gap_to_target.toFixed(2) + '%</td>';
+                tableHtml += '<td>' + city.remaining_days + '天</td>';
+                tableHtml += '<td class="font-semibold">' + (city.required_daily_growth > 0 ? city.required_daily_growth.toFixed(2) + '%' : '已达标') + '</td>';
+                tableHtml += '<td class="' + actualDodClass + '">' + actualDodStr + '</td>';
+                tableHtml += '<td>' + statusBadge + '</td>';
+                
+                // 预警列
+                var isSlow = false;
+                var isWarning = false;
+                insightsData.slow_cities.forEach(function(s) {
+                    if (s.city === city.city) isSlow = true;
+                });
+                insightsData.warning_cities.forEach(function(w) {
+                    if (w.city === city.city) isWarning = true;
+                });
+                
+                tableHtml += '<td>';
+                if (isSlow) {
+                    tableHtml += '<span class="status-badge status-danger">⚠️ 连续' + city.consecutive_slow + '天</span>';
+                } else {
+                    tableHtml += '<span class="text-gray-400">-</span>';
+                }
+                tableHtml += '</td>';
+                
+                tableHtml += '<td>';
+                if (isWarning) {
+                    tableHtml += '<span class="status-badge status-warning">⚠️ 需关注</span>';
+                } else {
+                    tableHtml += '<span class="text-gray-400">-</span>';
+                }
+                tableHtml += '</td>';
+                
+                tableHtml += '</tr>';
+            });
+
+            tableBody.innerHTML = tableHtml;
+
+            // 4. 渲染重点关注城市
+            if (insightsData.slow_cities.length > 0 || insightsData.warning_cities.length > 0) {
+                document.getElementById('focus-cities-section').style.display = '';
+                
+                var focusHtml = '';
+                
+                // 连续慢进度城市
+                if (insightsData.slow_cities.length > 0) {
+                    focusHtml += '<div class="insight-card p-4 border-red-200">';
+                    focusHtml += '<h4 class="font-semibold text-red-800 mb-2">⚠️ 连续进度慢城市</h4>';
+                    insightsData.slow_cities.forEach(function(city) {
+                        focusHtml += '<div class="mb-2 p-2 bg-red-50 rounded">';
+                        focusHtml += '<span class="font-bold text-red-700">' + city.city + '</span>';
+                        focusHtml += '<span class="text-sm text-gray-600 ml-2">连续' + city.consecutive_slow + '天进度慢</span>';
+                        focusHtml += '<div class="text-xs text-gray-500 mt-1">当前攻克率: ' + city.current_rate.toFixed(2) + '%，目标: ' + city.target_rate.toFixed(2) + '%</div>';
+                        focusHtml += '</div>';
+                    });
+                    focusHtml += '</div>';
+                }
+                
+                // 当日DoD预警城市
+                if (insightsData.warning_cities.length > 0) {
+                    focusHtml += '<div class="insight-card p-4 border-amber-200">';
+                    focusHtml += '<h4 class="font-semibold text-amber-800 mb-2">⚠️ 当日DoD预警城市</h4>';
+                    insightsData.warning_cities.forEach(function(city) {
+                        focusHtml += '<div class="mb-2 p-2 bg-amber-50 rounded">';
+                        focusHtml += '<span class="font-bold text-amber-700">' + city.city + '</span>';
+                        focusHtml += '<span class="text-sm text-gray-600 ml-2">实际DoD: ' + (city.actual_dod >= 0 ? '+' : '') + city.actual_dod.toFixed(2) + '%，所需: ' + city.required.toFixed(2) + '%</span>';
+                        focusHtml += '<div class="text-xs text-gray-500 mt-1">差值: ' + city.gap.toFixed(2) + '%</div>';
+                        focusHtml += '</div>';
+                    });
+                    focusHtml += '</div>';
+                }
+                
+                document.getElementById('focus-cities').innerHTML = focusHtml;
+            }
+
+            // 5. 保留原洞察卡片渲染
+            renderInsights();
+        }
+
         // ===== 初始化 =====
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
@@ -5177,7 +5531,7 @@
         function init() {
             renderKPIs();
             renderChart();
-            renderInsights();
+            renderInsightsAnalysis();  // 新增：渲染数据洞察与分析
             renderTable();  // 默认显示8城市明细表格
 
             // 城市筛选 - 切换表格
